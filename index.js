@@ -27,27 +27,28 @@ app.get("/api/hello", function (req, res) {
 app.get('/api/:date?', (req, res) => {
   let input = req.params.date;
 
-  let dateNow = new Date();
-
-  if(!input) return res.json({ unix: Number(dateNow.getTime()), utc: dateNow.toUTCString()})
-
-  let regex = /^\d{4}-\d{2}-\d{2}$/;
+  // Se nenhum input for fornecido, retorna a data atual
+  if (!input) {
+    let now = new Date();
+    return res.json({ unix: now.getTime(), utc: now.toUTCString() });
+  }
 
   let date;
 
-  if (isUnixTimestamp(Number(input))) {
-    date = new Date(Number(input) * (input.length === 10 ? 1000 : 1)); 
-
-  } else if (regex.test(input)) {
-    date = new Date(input + 'T00:00:00Z');
-
+  // Se o input for um número, trata como Unix Timestamp (segundos ou milissegundos)
+  if (!isNaN(input)) {
+    date = new Date(Number(input) * (input.length === 10 ? 1000 : 1));
   } else {
-    return res.json({ error: "Invalid Date" })
+    date = new Date(input); // Permite qualquer formato que o Date aceite
   }
 
-  res.json({ unix: Number(date.getTime()), utc: date.toUTCString() })
+  // Verifica se a data é válida
+  if (isNaN(date.getTime())) {
+    return res.json({ error: "Invalid Date" });
+  }
 
-})
+  res.json({ unix: date.getTime(), utc: date.toUTCString() });
+});
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
