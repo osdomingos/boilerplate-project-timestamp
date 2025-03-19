@@ -25,7 +25,7 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.get('/api/:date', (req, res) => {
-  let input = Number(req.params.date);
+  let input = req.params.date;
 
   let date = new Date(input + 'T00:00:00Z');
 
