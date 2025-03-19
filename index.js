@@ -24,8 +24,12 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api/:date', (req, res) => {
+app.get('/api/:date?', (req, res) => {
   let input = req.params.date;
+
+  let dateNow = new Date();
+
+  if(!input) return res.json({ unix: Number(dateNow.getTime()), utc: dateNow.toUTCString()})
 
   let regex = /^\d{4}-\d{2}-\d{2}$/;
 
